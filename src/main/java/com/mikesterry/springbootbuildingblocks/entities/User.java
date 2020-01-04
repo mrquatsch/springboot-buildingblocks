@@ -97,7 +97,9 @@ public class User {
     }
 
     @Override
+    //Used for bean logging
     public String toString() {
-        return super.toString();
+        return "User [id=" + id + ", username=" + username + ", firstname=" + firstname + ", lastname=" + lastname
+                + ", email=" + email + ", role=" + role + ", ssn=" + ssn + "]";
     }
 }
