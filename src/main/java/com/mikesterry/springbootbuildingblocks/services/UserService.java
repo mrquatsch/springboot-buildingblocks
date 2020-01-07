@@ -16,4 +16,12 @@ public class UserService {
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
+    public User createUser(User user) {
+        String username = user.getUsername();
+        if (userRepository.findByUsername(username) != null) {
+            // throw an exception later
+        }
+        return userRepository.save(user);
+    }
 }
