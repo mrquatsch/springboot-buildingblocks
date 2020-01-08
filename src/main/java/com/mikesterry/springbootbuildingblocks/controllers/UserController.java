@@ -20,12 +20,18 @@ public class UserController {
     }
 
     @PostMapping("/createUser")
-    public void createUser(@RequestBody User user) {
+    public User createUser(@RequestBody User user) {
         userService.createUser(user);
+        return user;
     }
 
     @GetMapping("/users/{id}")
     public Optional<User> getUserById(@PathVariable("id") Long id) {
         return userService.getUserById(id);
+    }
+
+    @PutMapping("/users/{id}")
+    public User updateUserById(@PathVariable("id") Long id , @RequestBody User user) {
+        return userService.updateUserById(id, user);
     }
 }

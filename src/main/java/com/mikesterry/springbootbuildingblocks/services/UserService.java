@@ -21,7 +21,7 @@ public class UserService {
     public User createUser(User user) {
         String username = user.getUsername();
         if (userRepository.findByUsername(username) != null) {
-            // throw an exception later
+            return null;
         }
         return userRepository.save(user);
     }
@@ -29,5 +29,10 @@ public class UserService {
     public Optional<User> getUserById(Long id) {
         Optional<User> user = userRepository.findById(id);
         return user;
+    }
+
+    public User updateUserById(Long id, User user) {
+        user.setId(id);
+        return userRepository.save(user);
     }
 }
