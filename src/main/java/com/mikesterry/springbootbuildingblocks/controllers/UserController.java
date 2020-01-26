@@ -2,6 +2,7 @@ package com.mikesterry.springbootbuildingblocks.controllers;
 
 import com.mikesterry.springbootbuildingblocks.entities.User;
 import com.mikesterry.springbootbuildingblocks.exceptions.UserExistsException;
+import com.mikesterry.springbootbuildingblocks.exceptions.UserNameNotFoundException;
 import com.mikesterry.springbootbuildingblocks.exceptions.UserNotFoundException;
 import com.mikesterry.springbootbuildingblocks.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,11 @@ public class UserController {
     }
 
     @GetMapping("/users/byusername/{username}")
-    public User getUserByUsername(@PathVariable("username") String username) {
-        return userService.getUserByUsername(username);
+    public User getUserByUsername(@PathVariable("username") String username) throws UserNameNotFoundException {
+        User user = userService.getUserByUsername(username);
+        if(user == null) {
+            throw new UserNameNotFoundException("Username: '" + username + "' not found in User repository");
+        }
+        return user;
     }
 }
