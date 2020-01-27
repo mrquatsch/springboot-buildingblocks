@@ -20,19 +20,20 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@RequestMapping(value = "/users")
 @Validated
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-    @GetMapping("/users")
+    @GetMapping
     public List<User> getAllUsers() {
         System.out.println(userService.getAllUsers());
         return userService.getAllUsers();
     }
 
-    @PostMapping("/createUser")
+    @PostMapping
     public ResponseEntity<Void> createUser(@Valid @RequestBody User user, UriComponentsBuilder builder) {
         try {
             userService.createUser(user);
@@ -44,7 +45,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/users/{id}")
+    @GetMapping("/{id}")
     public Optional<User> getUserById(@PathVariable("id") @Min(1) Long id) {
         try {
             return userService.getUserById( id );
@@ -53,7 +54,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/users/{id}")
+    @PutMapping("/{id}")
     public User updateUserById(@PathVariable("id") Long id , @RequestBody User user) {
         try {
             return userService.updateUserById( id, user );
@@ -62,7 +63,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("/{id}")
     public void deleteUserById(@PathVariable("id") Long id) {
         userService.deleteUserById(id);
     }
