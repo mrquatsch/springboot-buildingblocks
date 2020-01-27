@@ -1,5 +1,6 @@
 package com.mikesterry.springbootbuildingblocks.services;
 
+import com.mikesterry.springbootbuildingblocks.entities.Order;
 import com.mikesterry.springbootbuildingblocks.entities.User;
 import com.mikesterry.springbootbuildingblocks.exceptions.UserExistsException;
 import com.mikesterry.springbootbuildingblocks.exceptions.UserNotFoundException;
@@ -53,6 +54,14 @@ public class UserService {
             throw new ResponseStatusException( HttpStatus.BAD_REQUEST, Constants.USER_NOT_FOUND_EXCEPTION_MESSAGE);
         }
         userRepository.deleteById(id);
+    }
+
+    public List<Order> getAllOrdersById(Long id) throws UserNotFoundException {
+        if(!userRepository.findById(id).isPresent()) {
+            throw new UserNotFoundException(Constants.USER_NOT_FOUND_EXCEPTION_MESSAGE + id);
+        }
+        Optional<User> user = userRepository.findById(id);
+        return user.get().getOrders();
     }
 
     public User getUserByUsername(String username) {
