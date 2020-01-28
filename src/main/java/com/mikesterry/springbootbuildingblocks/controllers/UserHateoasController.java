@@ -6,6 +6,9 @@ import com.mikesterry.springbootbuildingblocks.exceptions.UserNameNotFoundExcept
 import com.mikesterry.springbootbuildingblocks.exceptions.UserNotFoundException;
 import com.mikesterry.springbootbuildingblocks.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.ControllerLinkBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +23,9 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "/users")
+@RequestMapping(value = "hateoas/users")
 @Validated
-public class UserController {
+public class UserHateoasController {
 
     @Autowired
     private UserService userService;
@@ -46,9 +49,15 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public Optional<User> getUserById(@PathVariable("id") @Min(1) Long id) {
+    public EntityModel<User> getUserById(@PathVariable("id") @Min(1) Long id) {
         try {
-            return userService.getUserById( id );
+            Optional<User> userOptional = userService.getUserById( id );
+            User user = userOptional.get();
+            Long userId = user.getUserId();
+            Link selfLink = ControllerLinkBuilder.linkTo(this.getClass()).slash(userId).withSelfRel();
+            user.add(selfLink);
+            EntityModel<User> finalResource = new EntityModel<User>(user);
+            return finalResource;
         } catch (UserNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -59,7 +68,7 @@ public class UserController {
         try {
             return userService.updateUserById( id, user );
         } catch (UserNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new ResponseStatusException( HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
