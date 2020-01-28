@@ -45,7 +45,7 @@ public class UserService {
         if(!userRepository.findById(id).isPresent()) {
             throw new UserNotFoundException(Constants.USER_NOT_FOUND_EXCEPTION_MESSAGE + id);
         }
-        user.setId(id);
+        user.setUserId(id);
         return userRepository.save(user);
     }
 
