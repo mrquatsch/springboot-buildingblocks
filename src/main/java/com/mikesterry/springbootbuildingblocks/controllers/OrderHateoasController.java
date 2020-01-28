@@ -8,6 +8,7 @@ import com.mikesterry.springbootbuildingblocks.services.OrderService;
 import com.mikesterry.springbootbuildingblocks.services.UserService;
 import com.mikesterry.springbootbuildingblocks.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -24,8 +25,11 @@ public class OrderHateoasController {
     private OrderService orderService;
 
     @GetMapping("/{id}/orders")
-    public List<Order> getAllOrders(@PathVariable("id") Long id) throws UserNotFoundException {
-        return userService.getAllOrdersById(id);
+    public CollectionModel<Order> getAllOrders(@PathVariable("id") Long id) throws UserNotFoundException {
+        List<Order> orders = userService.getAllOrdersById(id);
+        CollectionModel<Order> finalResources = new CollectionModel<Order>(orders);
+//        return userService.getAllOrdersById(id);
+        return finalResources;
     }
 
     @GetMapping("/orders/{id}")

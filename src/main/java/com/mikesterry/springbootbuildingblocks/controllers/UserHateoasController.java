@@ -1,11 +1,13 @@
 package com.mikesterry.springbootbuildingblocks.controllers;
 
+import com.mikesterry.springbootbuildingblocks.entities.Order;
 import com.mikesterry.springbootbuildingblocks.entities.User;
 import com.mikesterry.springbootbuildingblocks.exceptions.UserExistsException;
 import com.mikesterry.springbootbuildingblocks.exceptions.UserNameNotFoundException;
 import com.mikesterry.springbootbuildingblocks.exceptions.UserNotFoundException;
 import com.mikesterry.springbootbuildingblocks.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.ControllerLinkBuilder;
@@ -31,9 +33,21 @@ public class UserHateoasController {
     private UserService userService;
 
     @GetMapping
-    public List<User> getAllUsers() {
-        System.out.println(userService.getAllUsers());
-        return userService.getAllUsers();
+    public CollectionModel<User> getAllUsers() throws UserNotFoundException {
+        List<User> users = userService.getAllUsers();
+        for(User user : users) {
+            Long userId = user.getUserId();
+            Link selfLink = ControllerLinkBuilder.linkTo(this.getClass()).slash(userId).withSelfRel();
+            user.add(selfLink);
+            CollectionModel<Order> orders = ControllerLinkBuilder.methodOn(OrderHateoasController.class)
+                    .getAllOrders(userId);
+            Link ordersLink = ControllerLinkBuilder.linkTo(orders).withRel("all-orders");
+            user.add(ordersLink);
+        }
+        Link selfLinkGetAllUsers = ControllerLinkBuilder.linkTo(this.getClass()).withSelfRel();
+        CollectionModel<User> finalResources = new CollectionModel<User>(users, selfLinkGetAllUsers);
+
+        return finalResources;
     }
 
     @PostMapping
